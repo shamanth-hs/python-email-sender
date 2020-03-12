@@ -24,7 +24,7 @@ print(message_template)
 print("=====================\n\n\n")
 
 
-MY_ADDRESS = input("Enter Your email id : ")
+MY_ADDRESS = str(input("Enter Your email id : "))
 PASSWORD = input("Enter Your password: ")
 
 def get_contacts(filename):
@@ -60,7 +60,7 @@ def main():
     message_template = read_template('message.txt')
 
     # set up the SMTP server
-    s = smtplib.SMTP(host='smtp.gmail.com', port=465)
+    s = smtplib.SMTP(host='smtp.gmail.com', port=587)
     s.starttls()
     s.login(MY_ADDRESS, PASSWORD)
 
