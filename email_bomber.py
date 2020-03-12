@@ -77,14 +77,14 @@ def main():
         # setup the parameters of the message
         msg['From']=MY_ADDRESS
         msg['To']=email
-        msg['Subject']= input("Enter Subject")
+        msg['Subject']= "Important Notice"
         
         # add in the message body
         msg.attach(MIMEText(message, 'plain'))
         
         # send the message via the server set up earlier.
         s.send_message(msg)
-        print("Message {} sent to {}".format(message,msg['From']))
+        print("Message sent to {}".format(msg['To']))
         del msg
         
     # Terminate the SMTP session and close the connection
